@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
+
 import static java.time.temporal.ChronoUnit.DAYS;
 
 @Service
@@ -67,5 +69,10 @@ public class TransactionService {
         bookRepository.save(book);
 
         return transactionRepository.save(txn);
+    }
+
+
+    public List<Transaction> getTransactionsByMemberId(Long memberId) {
+        return transactionRepository.findByMemberId(memberId);
     }
 }
