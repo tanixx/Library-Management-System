@@ -19,7 +19,7 @@ public class Member {
     private String phone;
 
     // Link to the User who owns this profile
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 

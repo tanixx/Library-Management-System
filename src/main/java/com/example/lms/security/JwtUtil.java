@@ -39,11 +39,13 @@ public class JwtUtil {
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         Claims claims = Jwts.parser()
-                .verifyWith((SecretKey) signingKey).build()
+                .verifyWith((SecretKey) signingKey)
+                .build()
                 .parseSignedClaims(token)
                 .getPayload();
         return claimsResolver.apply(claims);
     }
+
 
     public boolean isTokenValid(String token, String username) {
         try {

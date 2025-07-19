@@ -21,7 +21,9 @@ public class Transaction {
     private LocalDate borrowDate;
     private LocalDate dueDate;
     private LocalDate returnDate;
-
+    private Integer fine;
     @Enumerated(EnumType.STRING)
     private TransactionStatus status;
+
+
 }
