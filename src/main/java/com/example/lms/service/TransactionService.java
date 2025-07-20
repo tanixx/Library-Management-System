@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
@@ -21,6 +22,8 @@ public class TransactionService {
 
     @Autowired
     private BookRepository bookRepository;
+
+
 
     public Transaction issueBook(Long memberId, Long bookId) {
         Member member = memberRepository.findById(memberId)
@@ -74,5 +77,11 @@ public class TransactionService {
 
     public List<Transaction> getTransactionsByMemberId(Long memberId) {
         return transactionRepository.findByMemberId(memberId);
+    }
+    public List<Transaction> getTransactionsByMember(String username) {
+        Optional<Member> member=memberRepository.findByUserUsername(username);
+        Long id=member.get().getId();
+        return transactionRepository.findByMemberId(id);
+
     }
 }

@@ -1,5 +1,6 @@
 package com.example.lms.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -11,18 +12,16 @@ public class BookRequest {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    private String title;
+    private String author;
+    @Column(unique = true, length = 20)
+    private String isbn;
+    private String category;
     @Enumerated(EnumType.STRING)
     private RequestStatus status;
-
     private LocalDateTime requestedDate = LocalDateTime.now();
-
-
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "member_id")        // FK column in book_requests table
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    @JoinColumn(name = "member_id")
     private Member member;
-
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "book_id")
-    private Book book;
 }

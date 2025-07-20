@@ -1,5 +1,6 @@
 package com.example.lms.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,10 +12,10 @@ public class Transaction {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @JsonIgnore
     @ManyToOne(optional = false)
     private Member member;
-
+    @JsonIgnore
     @ManyToOne(optional = false)
     private Book book;
 

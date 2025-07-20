@@ -14,4 +14,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
               OR lower(b.isbn)    LIKE lower(concat('%', :q, '%'))
            """)
     Page<Book> search(@Param("q") String query, Pageable pageable);
+    boolean existsByTitleIgnoreCaseAndAuthorIgnoreCase(String title, String author);
+
 }

@@ -27,8 +27,8 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req ->
                         req.requestMatchers("/api/auth/**", "/v3/api-docs/**", "/swagger-ui/**","/api/test/public").permitAll()
-                                .requestMatchers("/api/members/me/**","/api/transactions/member/**").hasRole("MEMBER")
-                                .requestMatchers("/api/transactions/issue","/api/transactions/return").hasRole("ADMIN")
+                                .requestMatchers("/api/members/me/**","/api/book-request/request").hasRole("MEMBER")
+                                .requestMatchers("/api/transactions/**","/api/book-request/pending","/api/book-request/{id}/**").hasRole("ADMIN")
                                 .anyRequest().authenticated())
                 .userDetailsService(userDetailsService)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
