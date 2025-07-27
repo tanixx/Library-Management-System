@@ -23,11 +23,12 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+
 @RestController
 @RequestMapping("/api/dashboard")
 @RequiredArgsConstructor
 public class DashBoardController {
-
     private final BookService bookService;
     @GetMapping("/books")
     public ResponseEntity<Page<BookDTO>> listBooks(
@@ -43,6 +44,7 @@ public class DashBoardController {
         Pageable pageable = PageRequest.of(page, size, sort);
         return ResponseEntity.ok(bookService.listBooks(pageable));
     }
+
     private final BookRequestService requestService;
     @GetMapping("/admin/bookRequest")
     public ResponseEntity<List<BookRequest>> viewPendingRequests() {

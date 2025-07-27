@@ -3,6 +3,7 @@ package com.example.lms.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.*;
 import org.springframework.security.authentication.*;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,10 +25,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req ->
-                        req.requestMatchers("/api/auth/**", "/v3/api-docs/**", "/swagger-ui/**","/api/test/public").permitAll()
+                        req.requestMatchers("/api/delete-user/**","/api/auth/**", "/v3/api-docs/**", "/swagger-ui/**","/api/test/public").permitAll()
                                 .requestMatchers("/api/members/me/**","/api/book-request/request").hasRole("MEMBER")
+                                .requestMatchers("/api/user/me").authenticated()
                                 .requestMatchers("/api/transactions/**","/api/book-request/pending","/api/book-request/{id}/**").hasRole("ADMIN")
                                 .anyRequest().authenticated())
                 .userDetailsService(userDetailsService)

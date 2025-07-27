@@ -63,7 +63,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
         } catch (JwtException | UsernameNotFoundException ex) {
             // optionally log the error
-            System.out.println("⚠️ JWT/Authentication error: " + ex.getMessage());
+            System.out.println("JWT/Authentication error: " + ex.getMessage());
         }
 
         chain.doFilter(request, response);

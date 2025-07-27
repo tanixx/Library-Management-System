@@ -25,7 +25,7 @@ public class MemberSelfController {
         MemberDTO member = selfService.createOrUpdateMember(username, dto);
         return ResponseEntity.ok(member);
     }
-
+    // authenticated user can change the password
     @PatchMapping("/password")
     public ResponseEntity<Void> changePassword(@RequestBody ChangePasswordDTO dto) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
