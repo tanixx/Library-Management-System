@@ -11,6 +11,8 @@ public class MemberDTO {
     private String phone;
     private String studentId;
     private Long userId;
+    private String username;
+
 
     public static MemberDTO from(Member member) {
         MemberDTO dto = new MemberDTO();
@@ -20,6 +22,8 @@ public class MemberDTO {
         dto.setPhone(member.getPhone());
         dto.setStudentId(member.getStudentId());
         dto.setUserId(member.getUser().getId());
+        dto.setUsername(member.getUser().getUsername());
+
         return dto;
     }
 }

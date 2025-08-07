@@ -5,6 +5,7 @@ import com.example.lms.dto.CreateMemberDTO;
 import com.example.lms.dto.MemberDTO;
 import com.example.lms.entity.Member;
 import com.example.lms.entity.User;
+import com.example.lms.mapper.MemberMapper;
 import com.example.lms.repository.MemberRepository;
 import com.example.lms.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -57,6 +58,11 @@ public class MemberSelfService {
 
         Member saved = memberRepository.save(member);
         return MemberDTO.from(saved);
+    }
+
+    public Member getMyMember(String username) {
+        return memberRepository.findByUserUsername(username)
+                .orElse(null);
     }
 
 }

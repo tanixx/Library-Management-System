@@ -3,14 +3,15 @@ package com.example.lms.controller;
 
 import com.example.lms.dto.BookDTO;
 import com.example.lms.dto.BookRequestDTO;
-import com.example.lms.entity.Book;
-import com.example.lms.entity.BookRequest;
-import com.example.lms.entity.RequestStatus;
-import com.example.lms.entity.Transaction;
+import com.example.lms.dto.MemberDTO;
+import com.example.lms.entity.*;
+import com.example.lms.repository.MemberRepository;
 import com.example.lms.service.BookRequestService;
 import com.example.lms.service.BookService;
+import com.example.lms.service.MemberService;
 import com.example.lms.service.TransactionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +30,29 @@ import java.util.List;
 @RequestMapping("/api/dashboard")
 @RequiredArgsConstructor
 public class DashBoardController {
+
+
+    private final MemberService memberService;
+
+    @Autowired
+    private  final MemberRepository memberRepository;
+
+    @GetMapping("/admin/members")
+    public Page<Member> getAllMembers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return memberRepository.findAll(PageRequest.of(page, size));
+    }
+
+    @GetMapping("/admin/members/search")
+    public Page<Member> searchMembers(
+            @RequestParam String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return memberRepository.findByNameContainingIgnoreCase(query, PageRequest.of(page, size));
+    }
+
+
     private final BookService bookService;
     @GetMapping("/books")
     public ResponseEntity<Page<BookDTO>> listBooks(

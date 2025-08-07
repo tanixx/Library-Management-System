@@ -10,6 +10,9 @@ import java.util.Optional;
 public interface BookRequestRepository extends JpaRepository<BookRequest, Long> {
     List<BookRequest> findByMember_User_Username(String username);
 
+    List<BookRequest> findByMemberId(Long memberId);
+
+
     List<BookRequest> findByStatus(RequestStatus status);
     boolean existsByTitleIgnoreCaseAndAuthorIgnoreCaseAndMember_User_UsernameAndStatus(
             String title, String author, String username, RequestStatus status);

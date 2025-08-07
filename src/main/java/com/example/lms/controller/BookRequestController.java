@@ -1,5 +1,6 @@
 package com.example.lms.controller;
 
+import com.example.lms.dto.AdminBookRequestDTO;
 import com.example.lms.dto.BookRequestDTO;
 import com.example.lms.entity.Book;
 import com.example.lms.entity.BookRequest;
@@ -24,16 +25,16 @@ public class BookRequestController {
     @PostMapping("/request")
     public ResponseEntity<BookRequest> requestBook(@RequestBody BookRequestDTO dto,
                                                    @AuthenticationPrincipal UserDetails userDetails) {
-        // Call service to create new request for the current user
+        // Call service to create a new request for the current user
         BookRequest request = requestService.requestNewBook(userDetails.getUsername(), dto);
         return ResponseEntity.ok(request); // Return created book request
     }
 
     // Get all pending book requests (for admin review)
     @GetMapping("/pending")
-    public ResponseEntity<List<BookRequest>> viewPendingRequests() {
+    public ResponseEntity<List<AdminBookRequestDTO>> viewPendingRequests() {
         // Fetch requests with PENDING status
-        List<BookRequest> pending = requestService.getRequestsByStatus(RequestStatus.PENDING);
+        List<AdminBookRequestDTO> pending = requestService.getAllPendingRequests();
         return ResponseEntity.ok(pending); // Return list of pending requests
     }
 
@@ -49,5 +50,12 @@ public class BookRequestController {
     public ResponseEntity<Book> approveRequest(@PathVariable Long id) {
         Book book = requestService.approveRequest(id); // Approve and add book
         return ResponseEntity.ok(book); // Return the added book details
+    }
+
+    //To fetch request by members
+    @GetMapping("/member/{memberId}")
+    public ResponseEntity<List<BookRequest>> getRequestsByMemberId(@PathVariable Long memberId) {
+        List<BookRequest> requests = requestService.getRequestsByMemberId(memberId);
+        return ResponseEntity.ok(requests);
     }
 }

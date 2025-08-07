@@ -1,5 +1,6 @@
 package com.example.lms.service;
 
+import com.example.lms.dto.AdminBookRequestDTO;
 import com.example.lms.dto.BookRequestDTO;
 import com.example.lms.entity.*;
 import com.example.lms.repository.BookRepository;
@@ -60,6 +61,28 @@ public class BookRequestService {
     public List<BookRequest> getRequestsByStatus(RequestStatus requestStatus) {
         return bookRequestRepo.findByStatus(RequestStatus.PENDING);
     }
+    public List<AdminBookRequestDTO> getAllPendingRequests() {
+        List<BookRequest> requests = bookRequestRepo.findByStatus(RequestStatus.PENDING);
+
+        return requests.stream().map(req -> {
+            AdminBookRequestDTO dto = new AdminBookRequestDTO();
+            dto.setId(req.getId());
+            dto.setTitle(req.getTitle());
+            dto.setAuthor(req.getAuthor());
+            dto.setCategory(req.getCategory());
+            dto.setIsbn(req.getIsbn());
+            dto.setRequestedDate(req.getRequestedDate().toString());
+            dto.setStatus(req.getStatus().toString());
+
+            if (req.getMember() != null && req.getMember().getUser() != null) {
+                dto.setMemberId(String.valueOf(req.getMember()));
+            } else {
+                dto.setMemberId("Unknown");
+            }
+
+            return dto;
+        }).toList();
+    }
 
     public void rejectRequest(Long id) {
         BookRequest request= bookRequestRepo.findById(id).orElseThrow(()->
@@ -83,5 +106,12 @@ public class BookRequestService {
         request.setStatus(RequestStatus.APPROVED);
         bookRequestRepo.save(request);
         return bookRepo.save(book);
+    }
+
+    private final BookRequestRepository bookRequestRepository;
+
+    public List<BookRequest> getRequestsByMemberId(Long memberId) {
+        return bookRequestRepository.findByMemberId(memberId);
+
     }
 }

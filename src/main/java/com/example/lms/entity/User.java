@@ -1,5 +1,6 @@
 package com.example.lms.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
@@ -16,6 +17,7 @@ public class User {
     @Column(nullable = false, unique = true, length = 120)
     private String username;
 
+    @JsonIgnore
     @Column(nullable = false)
     private String password;
 

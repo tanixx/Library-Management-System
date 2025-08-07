@@ -12,10 +12,8 @@ public class Transaction {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @JsonIgnore
     @ManyToOne(optional = false)
     private Member member;
-    @JsonIgnore
     @ManyToOne(optional = false)
     private Book book;
 
