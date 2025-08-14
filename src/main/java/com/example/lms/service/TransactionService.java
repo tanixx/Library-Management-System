@@ -4,6 +4,8 @@ import com.example.lms.AppConfig;
 import com.example.lms.entity.*;
 import com.example.lms.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -65,7 +67,7 @@ public class TransactionService {
         long daysLate = DAYS.between(txn.getDueDate(), today);
         int fineAmount=0;
         if (daysLate > 0) {
-            fineAmount = (int) (daysLate * Long.parseLong(AppConfig.get("LateFine")));
+            fineAmount = (int) (daysLate * Long.parseLong(AppConfig.get("app.lateFine")));
             txn.setFine(fineAmount);
 
             // Send email only if this is the first day late
@@ -92,6 +94,13 @@ public class TransactionService {
 
         return transactionRepository.save(txn);
     }
+
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void checkOverdueTransactionsOnStartup() {
+        checkOverdueTransactions();
+    }
+
     public void checkOverdueTransactions() {
         List<Transaction> allIssued = transactionRepository.findByStatus(TransactionStatus.ISSUED);
         LocalDate today = LocalDate.now();
@@ -100,20 +109,8 @@ public class TransactionService {
             long daysLate = DAYS.between(txn.getDueDate(), today);
 
             if (daysLate > 0 ) {
-                int fineAmount = (int) (daysLate * Long.parseLong(AppConfig.get("LateFine")));
+                int fineAmount = (int) (daysLate * Long.parseLong(AppConfig.get("app.lateFine")));
                 txn.setFine(fineAmount);
-
-                Member member = txn.getMember();
-                if (member != null && member.getEmail() != null) {
-                    String subject = "Book Overdue Reminder";
-                    String body = "Dear " + member.getName() + ",\n\n" +
-                            "The book \"" + txn.getBook().getTitle() + "\" is overdue by " + daysLate + " day(s).\n" +
-                            "Current fine: Rs. " + fineAmount + ".\n\n" +
-                            "Please return the book as soon as possible.\n\n" +
-                            "Regards,\nLibrary Management Team";
-
-                    emailService.sendEmail(member.getEmail(), subject, body);
-                }
 
                 txn.setStatus(TransactionStatus.OVERDUE); // mark as overdue
                 transactionRepository.save(txn); // save changes

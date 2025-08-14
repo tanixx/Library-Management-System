@@ -1,5 +1,7 @@
 package com.example.lms.controller;
 
+import org.aspectj.lang.annotation.Around;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -7,8 +9,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/test")
 public class TestController {
 
-    @GetMapping("/greeting")
+    @Autowired
+    @GetMapping("/updateTransactions")
     public ResponseEntity<String> greeting() {
+
+
         return ResponseEntity.ok("Hello, authenticated user!");
     }
 

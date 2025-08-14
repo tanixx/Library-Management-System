@@ -28,10 +28,13 @@ public class TransactionController {
         return ResponseEntity.ok(transactionService.issueBook(request.getMemberId(), request.getBookId()));
     }
 
+
+
         @GetMapping("/all")
         public Page<Transaction> getAllTransactions(
                 @RequestParam(defaultValue = "0") int page,
                 @RequestParam(defaultValue = "10") int size) {
+
 
             return transactionRepository.findAll(PageRequest.of(page, size, Sort.by("borrowDate").descending()));
         }
