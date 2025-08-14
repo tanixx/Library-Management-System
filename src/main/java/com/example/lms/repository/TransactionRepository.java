@@ -1,6 +1,7 @@
 package com.example.lms.repository;
 
 import com.example.lms.entity.Transaction;
+import com.example.lms.entity.TransactionStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
@@ -19,4 +20,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
 
     List<Transaction> findByMemberId(Long memberId);
+
+    List<Transaction> findByStatus(TransactionStatus status);
+
 }

@@ -32,6 +32,7 @@ public class TransactionController {
         public Page<Transaction> getAllTransactions(
                 @RequestParam(defaultValue = "0") int page,
                 @RequestParam(defaultValue = "10") int size) {
+
             return transactionRepository.findAll(PageRequest.of(page, size, Sort.by("borrowDate").descending()));
         }
 

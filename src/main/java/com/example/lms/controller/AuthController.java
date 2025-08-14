@@ -53,6 +53,7 @@ public class AuthController {
         user.getRoles().add(role);
         userRepo.save(user);
 
+
         // Generate JWT token for the new user
         String token = jwtUtil.generateToken(user.getUsername());
         return ResponseEntity.ok(new AuthResponse(token));
@@ -68,6 +69,9 @@ public class AuthController {
 
         // Generate JWT token on successful authentication
         String token = jwtUtil.generateToken(req.username());
+
+
+
         return ResponseEntity.ok(new AuthResponse(token));
     }
 }

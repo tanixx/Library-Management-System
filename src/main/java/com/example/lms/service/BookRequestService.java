@@ -8,6 +8,7 @@ import com.example.lms.repository.BookRequestRepository;
 import com.example.lms.repository.MemberRepository;
 import com.example.lms.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -93,20 +94,37 @@ public class BookRequestService {
         request.setStatus(RequestStatus.REJECTED);
         bookRequestRepo.save(request);
     }
-    public Book approveRequest(Long id){
-        BookRequest request=bookRequestRepo.findById(id).orElseThrow(()->
-                new RuntimeException(("Book request not found")));
-        Book book =new Book();
+    @Autowired
+    private EmailService emailService;
+    public Book approveRequest(Long id) {
+        BookRequest request = bookRequestRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Book request not found"));
+
+        Book book = new Book();
         book.setTitle(request.getTitle());
         book.setAuthor(request.getAuthor());
         book.setIsbn(request.getIsbn());
         book.setCategory(request.getCategory());
         book.setTotalCopies(1);
         book.setAvailableCopies(1);
+
         request.setStatus(RequestStatus.APPROVED);
         bookRequestRepo.save(request);
-        return bookRepo.save(book);
+
+        Book savedBook = bookRepo.save(book);
+
+        // Send email notification after approval
+        String subject = "Your Book Request Approved: " + request.getTitle();
+        String body = "Dear " + request.getMember().getName() + ",\n\n" +
+                "Your request for the book \"" + request.getTitle() + "\" has been approved.\n" +
+                "The book has now been added to the library and is available for borrowing.\n\n" +
+                "Regards,\nLibrary Management Team";
+
+        emailService.sendEmail(request.getMember().getEmail(), subject, body);
+
+        return savedBook;
     }
+
 
     private final BookRequestRepository bookRequestRepository;
 

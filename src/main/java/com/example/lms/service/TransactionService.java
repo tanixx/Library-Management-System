@@ -1,5 +1,6 @@
 package com.example.lms.service;
 
+import com.example.lms.AppConfig;
 import com.example.lms.entity.*;
 import com.example.lms.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,12 +43,13 @@ public class TransactionService {
         txn.setMember(member);
         txn.setBook(book);
         txn.setBorrowDate(LocalDate.now());
-        txn.setDueDate(LocalDate.now().plusDays(14));
+        txn.setDueDate(LocalDate.now().plusDays( Long.parseLong(AppConfig.get("app.daysToReturn"))));
         txn.setStatus(TransactionStatus.ISSUED);
 
         return transactionRepository.save(txn);
     }
-
+    @Autowired
+    private EmailService emailService;
     public Transaction returnBook(Long transactionId) {
         Transaction txn = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new RuntimeException("Transaction not found"));
@@ -61,8 +63,25 @@ public class TransactionService {
         txn.setStatus(TransactionStatus.RETURNED);
 
         long daysLate = DAYS.between(txn.getDueDate(), today);
+        int fineAmount=0;
         if (daysLate > 0) {
-            txn.setFine((int) (daysLate * 10));
+            fineAmount = (int) (daysLate * Long.parseLong(AppConfig.get("LateFine")));
+            txn.setFine(fineAmount);
+
+            // Send email only if this is the first day late
+            if (daysLate == 1) {
+                Member member = txn.getMember();
+                if (member != null && member.getEmail() != null) {
+                    String subject = "Book Return Overdue Notice";
+                    String body = "Dear " + member.getName() + ",\n\n" +
+                            "You have returned the book \"" + txn.getBook().getTitle() + "\" 1 day late.\n" +
+                            "A fine of Rs. " + fineAmount + " has been applied to your account.\n\n" +
+                            "Please ensure timely returns in the future.\n\n" +
+                            "Regards,\nLibrary Management Team";
+
+                    emailService.sendEmail(member.getEmail(), subject, body);
+                }
+            }
         } else {
             txn.setFine(0);
         }
@@ -72,6 +91,34 @@ public class TransactionService {
         bookRepository.save(book);
 
         return transactionRepository.save(txn);
+    }
+    public void checkOverdueTransactions() {
+        List<Transaction> allIssued = transactionRepository.findByStatus(TransactionStatus.ISSUED);
+        LocalDate today = LocalDate.now();
+
+        for (Transaction txn : allIssued) {
+            long daysLate = DAYS.between(txn.getDueDate(), today);
+
+            if (daysLate > 0 ) {
+                int fineAmount = (int) (daysLate * Long.parseLong(AppConfig.get("LateFine")));
+                txn.setFine(fineAmount);
+
+                Member member = txn.getMember();
+                if (member != null && member.getEmail() != null) {
+                    String subject = "Book Overdue Reminder";
+                    String body = "Dear " + member.getName() + ",\n\n" +
+                            "The book \"" + txn.getBook().getTitle() + "\" is overdue by " + daysLate + " day(s).\n" +
+                            "Current fine: Rs. " + fineAmount + ".\n\n" +
+                            "Please return the book as soon as possible.\n\n" +
+                            "Regards,\nLibrary Management Team";
+
+                    emailService.sendEmail(member.getEmail(), subject, body);
+                }
+
+                txn.setStatus(TransactionStatus.OVERDUE); // mark as overdue
+                transactionRepository.save(txn); // save changes
+            }
+        }
     }
 
 
